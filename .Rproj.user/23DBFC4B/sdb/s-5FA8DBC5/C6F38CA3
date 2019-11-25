@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1574640141859.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "C6F38CA3",
+    "lastKnownWriteTime" : 4294967302,
+    "last_content_update" : 1574640141859,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "BA3D3275",
+        "caption" : "non_primes",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=non_primes&cache_key=BA3D3275",
+        "displayedObservations" : 70,
+        "environment" : "",
+        "object" : "non_primes",
+        "preview" : 0,
+        "totalObservations" : 70,
+        "variables" : 1
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
