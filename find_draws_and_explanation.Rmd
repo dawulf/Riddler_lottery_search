@@ -1,11 +1,11 @@
 ---
 title: "Riddler Lottery Search"
-author: "Ami Wulf"
+author: "Ami Wulf, PhD Student, UCLA Statistics"
 date: "11/22/2019"
 output: pdf_document
 ---
 
-##This Document details the thought process I used to answer the FiveThirtyEight Riddler Classic for November 22, 2019. 
+##This Document details the thought process I used to answer the FiveThirtyEight Riddler Classic for November 22, 2019 (https://fivethirtyeight.com/features/can-you-decode-the-riddler-lottery). 
 
 ###Primary Problem:
 ###Five friends with a lot in common are playing the Riddler Lottery, in which each must choose exactly five numbers from 1 to 70. After they all picked their numbers, the first friend notices that no number was selected by two or more friends. Unimpressed, the second friend observes that all 25 selected numbers are composite (i.e., not prime). Not to be outdone, the third friend points out that each selected number has at least two distinct prime factors. After some more thinking, the fourth friend excitedly remarks that the product of selected numbers on each ticket is exactly the same. At this point, the fifth friend is left speechless. (You can tell why all these people are friends.)
@@ -60,7 +60,7 @@ non_primes <- non_primes[sapply(non_primes$factorization, function(x)
 table(unlist(non_primes$factorization))
 ```
 
-The leaves 28 potential numbers. Given that the problem implies that there is only one valid product, we must be able to lower these 28  to 25 numbers. Just as we wanted to remove primes that had fewer than 5 instances, we also must remove primes that to not have a multiple of 5 instances. We see that the three we remove must have a total of three 7s in their prime factorization to lower the number of 7s to 5. The same goes for two 5s, so we can start off by removing numbers with 7 and 5 in their prime factorization.
+The leaves 28 potential numbers. Given that the problem implies that there is only one valid product, we must be able to lower these 28  to 25 numbers. Just as we wanted to remove primes that had fewer than 5 instances, we also must remove primes that do not have a multiple of 5 instances. We see that the three we remove must have a total of three 7s in their prime factorization to lower the number of 7s to 5. The same goes for two 5s, so we can start off by removing numbers with 7 and 5 in their prime factorization.
 
 ```{r}
 non_primes <-  non_primes[!(non_primes$number %in% c(35,70)),]
@@ -83,7 +83,7 @@ $$2^7 * 3^4 * 5^2 * 7^1 * 11^1 = 19,\!958,\!400$$
 ###Extra credit: 
 ###How many different ways could the friends have selected five numbers each so that all their statements are true?
 
-Now that we know the prime factorization of each draw of 5 numbers, we can search for valid such draws, and then valid groups of 5 draws of 5 numbers. The former task will be completed by winnowing down draws of 5 numbers to those that qualify. The latter would take far too long to run (running a series of several operations and checks over a billion times) so we'll a sort of depth-first search, attempting to stop reaching the vast majority of those checks. First, the seach for valid draws of 5 numbers:
+Now that we know the prime factorization of each draw of 5 numbers, we can (1) search for valid such draws, and then (2) valid groups of 5 draws of 5 numbers. The former task will be completed by winnowing down draws of 5 numbers to those that qualify. The latter would take far too long to run (running a series of several operations and checks over a billion times) so we'll do a sort of depth-first search, attempting to stop reaching the vast majority of those checks. First, the search for valid draws of 5 numbers:
 ```{r}
 #Gets a list of valid quintets of numbers
 find_valid_5groups <- function(){
@@ -111,12 +111,20 @@ subset_correct_product <- function(combinations){
 }
 
 combinations <- find_valid_5groups()
+ncol(combinations)
 ```
 
-275 different draws of 5 result in the correct product.
+275 different draws of 5 result in the correct product. The first few columns (first 3 of 275 draws of 5 numbers) of the data structure looks like this:
+```{r}
+combinations[,1:3]
+```
+...which doesn't make much sense since we replaced the actual numbers with placeholders between 1 and 25. But we can switch back to interpretable draws easily:
+```{r}
+apply(combinations[,1:3], 2, function(x) non_primes[x,]$number)
+```
+Each of these groups of 5 numbers multiply to 19,958,400, but clearly there are multiple overlaps between even these first three of 275.
 
-
-Now, the search for draws of all 25 numbers in which each group of 5 is in our valid group of 275. Checking each potential grouping for validity would take far too long, so we'll create a custom process to cut the number of checks down. The function effectively cuts the vast majority of the checks out of contention before we even get to them.
+Therefore, we have to search for draws of all 25 numbers for which each group of 5 is in our valid group of 275. Checking each potential grouping for validity would take far too long, so we'll create a custom process to cut the number of checks down. The function effectively cuts the vast majority of the checks out of contention before we even get to them.
 
 ```{r}
 #place the 275 valid combinations of 5 numbers into a list
@@ -126,14 +134,15 @@ working_5_5_divisions <- NULL
 #start the search
 find_working_5_5_divisions <- function(combs, divs){
   working_5s_list <- NULL
-  divs <- add_another_5(working_5s_list = working_5s_list, remaining_combs = combs, divs = divs)
+  divs <- add_another_5(working_5s_list = working_5s_list, 
+                        remaining_combs = combs, divs = divs)
   return(divs)
 }
 
 #For each of the combinations that remain valid when the function is
-#called, and the groups of 5 that we've already selected in this
-#depth-first search, recurse on any new group of 5 that doesn't overlap
-#any of the already-selected groups.
+#called, and consideringthe groups of 5 that we've already selected in 
+#this depth-first search, recurse on any new group of 5 that doesn't 
+#overlap any of the already-selected groups.
 add_another_5 <- function(working_5s_list, remaining_combs, divs){
   n <- length(remaining_combs)
   #for each of the remaining combinations of 5
@@ -194,6 +203,6 @@ draw_numbers
 Success. This is a valid draw, since the 5 numbers each friend pulls all multiply to 19,958,400.
 
 
-It is important to note that a slightly different reading of the question could give a much larger answer than 12,781. I am choosing to view at the same division of the 25 numbers into 5 groups of 5 as one "way" no matter which friend gets which grouping of 5. If instead we took the random valid draw above, labeled column 1 "Friend2" and column 2 "Friend1", and declared that to be a new valid draw, we would have far more valid draws. This marks the difference between a combination and a permutation (without getting into the ordering of numbers \textit{within} each friend's draw), and the correct answer would be
+It is important to note that a slightly different reading of the question could give a much larger answer than 12,781. I am choosing to view the same division of the 25 numbers into 5 groups of 5 as one "way" no matter which friend gets which grouping of 5. If instead we took the random valid draw above, labeled column 1 "Friend2" and column 2 "Friend1", and declared that to be a new valid draw, we would have far more valid draws. This marks the difference between a combination and a permutation (without getting into the ordering of numbers \textit{within} each friend's draw), and the correct answer would be
 
 $$12,\!781 * 5! = 1,\!533,\!720.$$
