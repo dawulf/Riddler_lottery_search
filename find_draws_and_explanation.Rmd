@@ -1,7 +1,7 @@
 ---
 title: "Riddler Lottery Search"
 author: "Ami Wulf"
-date: "11/24/2019"
+date: "11/22/2019"
 output: pdf_document
 ---
 
@@ -191,6 +191,9 @@ rownames(draw_numbers) <- c("Number1","Number2","Number3","Number4","Number5","P
 draw_numbers
 ```
 
-It is important to note that a slightly different reading of the question could give a much larger answer than 12,781. I am choosing to view at the same division of the 25 numbers into 5 groups of 5 as one "way" no matter which friend gets which grouping of 5. If instead we took the random valid draw above, labeled column 1 "Friend2" and column 2 "Friend1", and declared that to be a new valid draw, we would have far more valid draws. This marks the difference between a combination and a permutation (without getting into the ordering of numbers \textit{within} each friend's), and the correct answer would be
+Success. This is a valid draw, since the 5 numbers each friend pulls all multiply to 19,958,400.
 
-$$12,\!781 * 5! = $$
+
+It is important to note that a slightly different reading of the question could give a much larger answer than 12,781. I am choosing to view at the same division of the 25 numbers into 5 groups of 5 as one "way" no matter which friend gets which grouping of 5. If instead we took the random valid draw above, labeled column 1 "Friend2" and column 2 "Friend1", and declared that to be a new valid draw, we would have far more valid draws. This marks the difference between a combination and a permutation (without getting into the ordering of numbers \textit{within} each friend's draw), and the correct answer would be
+
+$$12,\!781 * 5! = 1,\!533,\!720.$$
